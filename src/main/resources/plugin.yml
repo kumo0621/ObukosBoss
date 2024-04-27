@@ -1,0 +1,4 @@
+name: ObukosBoss
+version: '${project.version}'
+main: com.kumo0621.github.obukosboss.ObukosBoss
+api-version: '1.20'
