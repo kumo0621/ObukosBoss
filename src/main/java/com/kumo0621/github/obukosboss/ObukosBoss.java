@@ -44,6 +44,7 @@ public final class ObukosBoss extends JavaPlugin {
                             target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2000);
                             target.setHealth(2000);
                             target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 4));
+                            target.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 4));
                             evokerHealthMap.put(entityId, 2000.0);
                         }
 
@@ -75,7 +76,7 @@ public final class ObukosBoss extends JavaPlugin {
 
                         if (evokerHealthMap.containsKey(entityId)) {
                             Random random = new Random();
-                            int action = random.nextInt(3);
+                            int action = random.nextInt(10);
                             actionCheck.run(action, target);
                         }
                     }
