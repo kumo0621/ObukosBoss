@@ -7,13 +7,22 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Random;
+
 public class ActionCheck {
 
     private final Plugin plugin;
     private AnvilRain anvilRain;
+    private RandomTeleport randomTeleport;
+    private LightningStrike lightningStrike;
+    private GuardianSpawner guardianSpawner;
+
     public ActionCheck(Plugin plugin) {
         this.plugin = plugin;
         this.anvilRain = new AnvilRain(plugin); // AnvilRain インスタンスを作成
+        this.randomTeleport = new RandomTeleport(plugin);
+        this.lightningStrike = new LightningStrike(plugin);
+        this.guardianSpawner = new GuardianSpawner(plugin);
     }
 
     public void run(int action, Entity entity) {
@@ -41,15 +50,12 @@ public class ActionCheck {
     }
 
     private void handleWardenAction(int action, Entity entity) {
-        if (action == 0) {
-            entity.setVelocity(entity.getVelocity().add(new org.bukkit.util.Vector(0, 1, 0))); // Jump
-        } else if (action == 1) {
+        if (action == 1||action == 2||action == 3||action == 4||action == 5) {
             new bombSummon(plugin, entity); // Summon bombs
         }
     }
 
     private void handleEvokerAction(int action, Entity entity) {
-        System.out.println(action);
         if (action == 0 || action == 1 || action == 2 || action == 3 ) {
             entity.setVelocity(entity.getVelocity().add(new org.bukkit.util.Vector(0, 1, 0))); // Jump
         } else if (action == 5) {
@@ -67,14 +73,26 @@ public class ActionCheck {
     }
 
     private void handlePiglinBruteAction(int action, Entity entity) {
-        // Define specific actions for Piglin Brute
+        System.out.println(action);
+        if (action == 0 || action == 1 || action == 2 || action == 3 ) {
+
+        } else if (action == 5) {
+            anvilRain.dropAnvils(entity, 20, 40); // インスタンスメソッドを呼び出す
+        } else if (action == 6 || action == 7 || action == 8 || action == 9){
+
+        }
     }
 
     private void handleShulkerAction(int action, Entity entity) {
-        // Define specific actions for Shulker
+        randomTeleport.teleportNearbyPlayers(entity,10,10);
     }
 
     private void handleElderGuardianAction(int action, Entity entity) {
-        // Define specific actions for Elder Guardian
+        Random random = new Random();
+        int number = random.nextInt(10); // 1 から maxGuardians の間でランダムな数
+        if (action == 5 || action == 6 || action == 7 || action == 8 || action == 9){
+            guardianSpawner.spawnGuardians(entity,number);
+        }
+
     }
 }
