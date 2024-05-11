@@ -16,13 +16,14 @@ public class ActionCheck {
     private RandomTeleport randomTeleport;
     private LightningStrike lightningStrike;
     private GuardianSpawner guardianSpawner;
-
+    private ZombieSpawner zombieSpawner;
     public ActionCheck(Plugin plugin) {
         this.plugin = plugin;
         this.anvilRain = new AnvilRain(plugin); // AnvilRain インスタンスを作成
         this.randomTeleport = new RandomTeleport(plugin);
         this.lightningStrike = new LightningStrike(plugin);
         this.guardianSpawner = new GuardianSpawner(plugin);
+        this.zombieSpawner = new ZombieSpawner(plugin);
     }
 
     public void run(int action, Entity entity) {
@@ -73,14 +74,7 @@ public class ActionCheck {
     }
 
     private void handlePiglinBruteAction(int action, Entity entity) {
-        System.out.println(action);
-        if (action == 0 || action == 1 || action == 2 || action == 3 ) {
-
-        } else if (action == 5) {
-            anvilRain.dropAnvils(entity, 20, 40); // インスタンスメソッドを呼び出す
-        } else if (action == 6 || action == 7 || action == 8 || action == 9){
-
-        }
+        zombieSpawner.spawnSpeedyBabyZombiesPeriodically(entity);
     }
 
     private void handleShulkerAction(int action, Entity entity) {
