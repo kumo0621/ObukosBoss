@@ -32,7 +32,7 @@ public class RandomTeleport {
                     int dz = random.nextInt(teleportRadius * 2 + 1) - teleportRadius;
 
                     Location newLocation = player.getLocation().clone().add(dx, 0, dz);
-                    newLocation.setY(entity.getWorld().getHighestBlockYAt(newLocation)); // Ensure the player doesn't spawn underground or in the air.
+                    newLocation.setY(player.getLocation().getY()); // 元のy座標を使用
 
                     player.teleport(newLocation);
                 }

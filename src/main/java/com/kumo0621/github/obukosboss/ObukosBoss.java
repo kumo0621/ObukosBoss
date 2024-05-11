@@ -2,6 +2,7 @@ package com.kumo0621.github.obukosboss;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
@@ -15,6 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
+
 public final class ObukosBoss extends JavaPlugin {
     HashMap<UUID, Double> evokerHealthMap = new HashMap<>();
     HashMap<UUID, BossBar> bossBars = new HashMap<>();
@@ -25,6 +27,7 @@ public final class ObukosBoss extends JavaPlugin {
             EntityType.SHULKER,
             EntityType.ELDER_GUARDIAN
     );
+
     @Override
     public void onEnable() {
         // Register any listeners
@@ -34,30 +37,49 @@ public final class ObukosBoss extends JavaPlugin {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Entity entity : Bukkit.getWorlds().get(0).getEntities()) {
-                    if (targetEntityTypes.contains(entity.getType())) {
-                        LivingEntity target = (LivingEntity) entity;
-                        UUID entityId = target.getUniqueId();
+                for (World world : Bukkit.getWorlds()) {
+                    for (Entity entity : world.getEntities()) {
+                        if (targetEntityTypes.contains(entity.getType())) {
+                            LivingEntity target = (LivingEntity) entity;
+                            UUID entityId = target.getUniqueId();
 
-                        // Set up health and potion effects
-                        if (!evokerHealthMap.containsKey(entityId)) {
-                            target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2000);
-                            target.setHealth(2000);
-                            target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 4));
-                            target.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 4));
-                            evokerHealthMap.put(entityId, 2000.0);
-                        }
+                            // Set up health and potion effects
+                            if (!evokerHealthMap.containsKey(entityId)) {
+                                if (entity.getType() == EntityType.SHULKER) {
+                                    // シュルカーの場合の設定
+                                    target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(200);
+                                    target.setHealth(200);
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 2)); // 火耐性を少し低く設定
+                                    evokerHealthMap.put(entityId, 200.0);
+                                }else if (entity.getType() == EntityType.WARDEN) {
+                                    // シュルカーの場合の設定
+                                    target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2000);
+                                    target.setHealth(2000);
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 2));
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 2)); // 火耐性を少し低く設定
+                                    evokerHealthMap.put(entityId, 2000.0);
+                                } else {
+                                    // 他の対象エンティティの場合の設定
+                                    target.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(2000);
+                                    target.setHealth(2000);
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 0));
+                                    target.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 4));
+                                    evokerHealthMap.put(entityId, 2000.0);
+                                }
+                            }
 
-                        // Set up and update boss bars
-                        BossBar bossBar = bossBars.computeIfAbsent(entityId, k -> Bukkit.createBossBar("Health: " + target.getType(), BarColor.PURPLE, BarStyle.SOLID));
-                        bossBar.setProgress(target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
-                        updateBossBarVisibility(target, bossBar);
+                            // Set up and update boss bars
+                            BossBar bossBar = bossBars.computeIfAbsent(entityId, k -> Bukkit.createBossBar("Health: " + target.getType(), BarColor.PURPLE, BarStyle.SOLID));
+                            bossBar.setProgress(target.getHealth() / target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+                            updateBossBarVisibility(target, bossBar);
 
-                        // Check if the entity is dead
-                        if (target.isDead() || !target.isValid()) {
-                            bossBar.removeAll();
-                            bossBars.remove(entityId);
-                            evokerHealthMap.remove(entityId);
+                            // Check if the entity is dead
+                            if (target.isDead() || !target.isValid()) {
+                                bossBar.removeAll();
+                                bossBars.remove(entityId);
+                                evokerHealthMap.remove(entityId);
+                            }
                         }
                     }
                 }
@@ -69,15 +91,17 @@ public final class ObukosBoss extends JavaPlugin {
             @Override
             public void run() {
                 ActionCheck actionCheck = new ActionCheck(ObukosBoss.this);
-                for (Entity entity : Bukkit.getWorlds().get(0).getEntities()) {
-                    if (targetEntityTypes.contains(entity.getType())) {
-                        LivingEntity target = (LivingEntity) entity;
-                        UUID entityId = target.getUniqueId();
+                for (World world : Bukkit.getWorlds()) {
+                    for (Entity entity : world.getEntities()) {
+                        if (targetEntityTypes.contains(entity.getType())) {
+                            LivingEntity target = (LivingEntity) entity;
+                            UUID entityId = target.getUniqueId();
 
-                        if (evokerHealthMap.containsKey(entityId)) {
-                            Random random = new Random();
-                            int action = random.nextInt(10);
-                            actionCheck.run(action, target);
+                            if (evokerHealthMap.containsKey(entityId)) {
+                                Random random = new Random();
+                                int action = random.nextInt(10);
+                                actionCheck.run(action, target);
+                            }
                         }
                     }
                 }

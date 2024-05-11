@@ -1,5 +1,7 @@
 package com.kumo0621.github.obukosboss;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -14,6 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.UUID;
+
 class EvokerDeathListener implements Listener {
 
     private ObukosBoss plugin;
@@ -24,6 +27,7 @@ class EvokerDeathListener implements Listener {
             EntityType.SHULKER,
             EntityType.ELDER_GUARDIAN
     );
+
     public EvokerDeathListener(ObukosBoss plugin) {
         this.plugin = plugin;
     }
@@ -40,6 +44,7 @@ class EvokerDeathListener implements Listener {
             plugin.evokerHealthMap.remove(entityId);  // Remove the entity's health record
         }
     }
+
     // 対象となるエンティティタイプのセットを定義
     private static final Set<EntityType> TARGET_ENTITY_TYPES = EnumSet.of(
             EntityType.WARDEN,        // ヴォーデン
@@ -54,14 +59,16 @@ class EvokerDeathListener implements Listener {
         Player player = event.getPlayer();
         boolean effectApplied = false;
 
-        for (Entity entity : player.getWorld().getEntities()) {
-            if (TARGET_ENTITY_TYPES.contains(entity.getType())) {
-                double distance = entity.getLocation().distance(player.getLocation());
-                if (distance <= 20) {
-                    if (!effectApplied) { // 効果がまだ適用されていない場合のみ適用
-                        PotionEffect effect = new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2); // 400ティック = 20秒, レベル3
-                        player.addPotionEffect(effect);
-                        effectApplied = true; // 効果を適用したことをマーク
+        for (World world : Bukkit.getWorlds()) {
+            for (Entity entity : world.getEntities()) {
+                if (TARGET_ENTITY_TYPES.contains(entity.getType())) {
+                    double distance = entity.getLocation().distance(player.getLocation());
+                    if (distance <= 20) {
+                        if (!effectApplied) { // 効果がまだ適用されていない場合のみ適用
+                            PotionEffect effect = new PotionEffect(PotionEffectType.SLOW_DIGGING, 400, 2); // 400ティック = 20秒, レベル3
+                            player.addPotionEffect(effect);
+                            effectApplied = true; // 効果を適用したことをマーク
+                        }
                     }
                 }
             }
